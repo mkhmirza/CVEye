@@ -21,5 +21,10 @@ cd CVEye
 pip install -r requirements.txt
 ```
 
+## Datasets
+
+- [Exploit DB](https://gitlab.com/exploit-database/exploitdb/-/blob/main/files_exploits.csv?ref_type=heads)
+- [Known Exploited Vulnerabilities (KEV)](https://zenodo.org/records/16747173?utm_source=chatgpt.com)
+- [CISA](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 
 
