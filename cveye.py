@@ -128,7 +128,8 @@ if(choice == 1):
     severity = getCVEInformation(cveJson)[5]
     formatedBaseScore = f"{severity}{getCVEInformation(cveJson)[2]} ({getCVEInformation(cveJson)[3]}){COLORS['RESET']}"
 
-
+    # get cwe data
+    cwe = requests.get('https://docs.opencve.io/v1/api/cwe/')
 
     # load the cisa csv for data searching
     # downloaded from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -167,8 +168,8 @@ if(choice == 1):
             formatedTxt = f"{row['attack_object_id']} - {row['attack_object_name']}"
             attackTechnique += ''.join(formatedTxt) + "\n"
 
-        cisaURLs = re.findall(r'https?://\S+', row['notes'])
-        kveURLs = re.findall(r'https?://\S+', row['references'])
+            cisaURLs = re.findall(r'https?://\S+', row['notes'])
+            kveURLs = re.findall(r'https?://\S+', row['references'])
 
         formatedUrl = ", ".join(cisaURLs + kveURLs).strip('\']')
 
@@ -177,12 +178,15 @@ if(choice == 1):
         # product = row['product'] 
 
         summary = [row['vulnerabilityName'], row['vendorProject'], row['product'], formatedUrl]
+        printSummary(summary)
 
+    
     # now construct a new object with all the data
 
     info = getCVEInformation(cveJson)
     table = [{
         "CVE ID":cveID,
+       # "CWE": ''.join(str(cwe) for cwe in info[4]),
         "Description": info[0][:20] + "..." if len(info[0]) > 20 else info[0],
         "Vector String": info[1],
         "Base Score": formatedBaseScore,
@@ -191,7 +195,7 @@ if(choice == 1):
 
    
     
-    printSummary(summary)
+    print()
     print(tabulate.tabulate(table, headers="keys", tablefmt="grid"))
 
 
