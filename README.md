@@ -2,7 +2,11 @@
 
 CVEye is a **Python-based vulnerability intelligence tool** that aggregates, summarizes, and displays CVE information, exploits, and MITRE ATT&CK techniques. 
 
----
+## Usage
+
+```
+python3 cveye.py
+```
 
 ## Features
 
@@ -13,7 +17,7 @@ CVEye is a **Python-based vulnerability intelligence tool** that aggregates, sum
 - Produces readable, terminal-friendly tables
 - Designed for scripting and automation
 
-## Installation
+## Dependencies
 
 ```bash
 git clone https://github.com/yourusername/CVEye.git
@@ -25,6 +29,9 @@ pip install -r requirements.txt
 
 - [Exploit DB](https://gitlab.com/exploit-database/exploitdb/-/blob/main/files_exploits.csv?ref_type=heads)
 - [Known Exploited Vulnerabilities (KEV)](https://zenodo.org/records/16747173?utm_source=chatgpt.com)
-- [CISA](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
+- [CISA Known Exploited Vulnerabilities](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 
+## Licenses
+
+This project is licensed under the MIT License.
 
