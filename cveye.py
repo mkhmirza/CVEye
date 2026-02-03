@@ -89,21 +89,34 @@ def printMenu():
     print(" [3] Show CVE Summary")
     print(" [0] Exit")
     print()
-    print("="*50)
+    print("="*80)
 
 def printSummary(summary):
     print("=" * 80)
-    print(f"Vulnerability : {summary[0]}")
-    print(f"Product       : {summary[2]}")
-    print(f"Vendor        : {summary[1]}")
-    print(f"Links         : {summary[3]}")
+    print(" ** General Information **")
     print("=" * 80)
+    print(f"Vulnerability     : {summary[0]}")
+    print(f"Product           : {summary[2]}")
+    print(f"Vendor            : {summary[1]}")
+    print(f"Exploit Available : {summary[4]}")
+    print(f"Links             : {summary[3]}")
+    print("=" * 80)
+
+def printExploitDbInformation(exploitDbRow):
+    print(" ** Exploit DB Information **")
+    print("=" * 80)
+    print(f"Exploit ID  : {exploitDbRow[0][0]}")
+    print(f"Link        : {exploitDbRow[0][1]}")
+    print(f"Description : {exploitDbRow[0][2]}")
+    print(f"Author      : {exploitDbRow[0][3]}")
+    print("=" * 80)
+
 
 
 printMenu()
 choice = int(input("Enter Your Choice: "))
 
-if(choice == 1):
+if choice == 1:
     cveID = input("Enter CVE ID or Description: (CVE-XXXX-XXXX) ").upper()
     regex = "CVE-([0-9]+)-([0-9]+)"
 
@@ -129,7 +142,7 @@ if(choice == 1):
     formatedBaseScore = f"{severity}{getCVEInformation(cveJson)[2]} ({getCVEInformation(cveJson)[3]}){COLORS['RESET']}"
 
     # get cwe data
-    cwe = requests.get('https://docs.opencve.io/v1/api/cwe/')
+    #cwe = requests.get('https://docs.opencve.io/v1/api/cwe/')
 
     # load the cisa csv for data searching
     # downloaded from https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -137,10 +150,26 @@ if(choice == 1):
 
     cisa = pd.read_csv("datasets/known_exploited_vulnerabilities.csv", )
     kve = pd.read_csv("datasets/kev-02.13.2025_attack-15.1-enterprise.csv")
+    exploitdb = pd.read_csv("datasets/exploit-db.csv")
 
     # format to Upper case and strip unwanted characters
     cisa['cveID'] = cisa['cveID'].str.upper().str.strip()
     kve['capability_id'] = kve['capability_id'].str.upper().str.strip()
+    exploitdb['codes'] = exploitdb['codes'].str.upper().str.strip()
+
+    # match CVE-xxx-xxxx from 'codes' column
+    mask = exploitdb["codes"].str.contains(
+        rf"\b{re.escape(cveID)}\b",
+        na=False,
+        regex=True
+    )
+
+    # get the row
+    exploitdbRow = exploitdb[mask]
+    isExploitAv = False
+    if not exploitdbRow.empty:
+        isExploitAv = True
+
 
     # merge first df with the second df
     # this is same as joins in sql
@@ -177,9 +206,12 @@ if(choice == 1):
         # vendor = row['vendorProject']
         # product = row['product'] 
 
-        summary = [row['vulnerabilityName'], row['vendorProject'], row['product'], formatedUrl]
+        summary = [row['vulnerabilityName'], row['vendorProject'], row['product'], formatedUrl, isExploitAv]
         printSummary(summary)
 
+    if isExploitAv:
+        exploitDbList = exploitdbRow.to_numpy().tolist()
+        printExploitDbInformation(exploitDbList)
     
     # now construct a new object with all the data
 
